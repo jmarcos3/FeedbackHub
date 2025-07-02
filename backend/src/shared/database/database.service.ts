@@ -1,5 +1,3 @@
-// src/shared/database/database.service.ts
-
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as mysql2 from 'mysql2/promise';
 import { drizzle } from 'drizzle-orm/mysql2';
@@ -20,7 +18,7 @@ export class DatabaseService implements OnModuleInit {
     });
 
     this.db = drizzle(this.connection, { schema, mode: 'default' });
-    console.log('Banco conectado');
+    console.log('✔');
   }
 
   getDb() {
@@ -29,7 +27,8 @@ export class DatabaseService implements OnModuleInit {
   }
 
   getConnection() {
-    if (!this.connection) throw new Error('Database connection not initialized');
+    if (!this.connection)
+      throw new Error('Database connection not initialized');
     return this.connection;
   }
 }
