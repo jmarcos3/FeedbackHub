@@ -11,7 +11,6 @@ export class UserRepository {
     private readonly databaseService: DatabaseService,
   ) {}
 
-  // 🔽 Getter para o DB
   private get db() {
     return this.databaseService.getDb();
   }

@@ -2,7 +2,6 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { HashService } from "../services/hash.service";
 import { UserRepository } from "../repositories/user.repository";
-import { create } from "domain";
 import { USER_SUCESSFULL } from "src/shared/constants/helpers/userSucess.helpers";
 import { USER_ERRORS } from "src/shared/constants/helpers/userErrors.helpers";
 

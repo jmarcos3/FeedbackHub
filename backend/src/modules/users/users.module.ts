@@ -12,7 +12,6 @@ import { DatabaseModule } from 'src/shared/database/database.module';
     UserRepository,
     CreateUserUseCase,
   ],
-  
-
+  exports: [UserRepository, HashService],
 })
 export class UsersModule {}
