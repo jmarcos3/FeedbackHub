@@ -9,6 +9,7 @@ export const roomsTable = mysqlTable(
     description: varchar('description', { length: 255 }),
     ownerId: varchar('owner_id', { length: 26 }).notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at'),
   },
   (table) => ({
     ownerFk: foreignKey({

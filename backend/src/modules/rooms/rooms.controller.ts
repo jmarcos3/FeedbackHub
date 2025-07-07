@@ -1,12 +1,20 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Patch, Param, Delete } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { CreateRoomUseCase } from './useCases/create-room.usecase';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { ListRoomsUseCase } from './useCases/list-rooms.usecase';
+import { UpdateRoomDto } from './dto/update-room.dto';
+import { UpdateRoomUseCase } from './useCases/update-room.usecase';
+import { DeleteRoomUseCase } from './useCases/delete-room.usecase';
 
 @Controller('rooms')
 export class RoomsController {
-  constructor(private readonly createRoomUseCase: CreateRoomUseCase) {}
+  constructor(
+    private readonly createRoomUseCase: CreateRoomUseCase,
+    private readonly listRoomsUseCase: ListRoomsUseCase,
+    private readonly updateRoomUseCase: UpdateRoomUseCase,
+    private readonly deleteRoomUseCase: DeleteRoomUseCase,) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
@@ -14,4 +22,30 @@ export class RoomsController {
     const user = req.user as { sub: string };
     return this.createRoomUseCase.execute(dto, user.sub);
   }
+
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  async list(@Req() req: any) {
+    const ownerId = req.user.sub;
+    return this.listRoomsUseCase.execute(ownerId);
+  }
+
+  @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
+  async updateRoom(
+    @Param('id') id: string,
+    @Body() dto: UpdateRoomDto,
+    @Req() req: any,
+  ) {
+    const ownerId = req.user.sub;
+    return this.updateRoomUseCase.execute(id, ownerId, dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  async deleteRoom(@Param('id') roomId: string, @Req() req) {
+    const ownerId = req.user.sub; 
+    return this.deleteRoomUseCase.execute(roomId, ownerId);
+}
+
 }

@@ -15,6 +15,13 @@
       "when": 1751829080642,
       "tag": "0001_overrated_galactus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1751907266615,
+      "tag": "0002_dry_edwin_jarvis",
+      "breakpoints": true
     }
   ]
 }
