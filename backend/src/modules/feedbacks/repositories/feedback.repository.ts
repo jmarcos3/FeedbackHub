@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { desc, eq } from 'drizzle-orm';
 import { DatabaseService } from 'src/shared/database/database.service';
 import { feedbacksTable } from 'src/shared/database/tables/feedback.table';
 import { ulid } from 'ulid';
@@ -23,4 +24,15 @@ export class FeedbackRepository {
 
     return feedbackToCreate
   }
+
+  async findManyByRoomId(roomId: string) {
+  const rows = await this.db
+    .select()
+    .from(feedbacksTable)
+    .where(eq(feedbacksTable.roomId, roomId))
+    .orderBy(desc(feedbacksTable.createdAt));
+
+  return rows;
+}
+
 }
