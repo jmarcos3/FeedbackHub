@@ -17,5 +17,6 @@ import { DeleteRoomUseCase } from './useCases/delete-room.usecase';
     DeleteRoomUseCase,
     RoomRepository
   ],
+  exports: [RoomRepository],
 })
 export class RoomsModule {}
