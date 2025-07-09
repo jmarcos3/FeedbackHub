@@ -33,7 +33,7 @@ export class LoginUseCase {
     };
 
     const token = await this.jwtService.signAsync(payload);
-    console.log(token)
+  
     return {
       accessToken: token,
     };
