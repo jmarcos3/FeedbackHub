@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
+import axios from 'axios'
 import 'react-toastify/dist/ReactToastify.css'
 
 export default function Login() {
@@ -14,23 +15,16 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const res = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const { data } = await axios.post('http://localhost:3000/auth/login', {
+        email,
+        password,
       })
 
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.message || 'Erro ao fazer login')
-      }
-
-      const { accessToken } = await res.json()
-      localStorage.setItem('token', accessToken)
+      localStorage.setItem('token', data.accessToken)
       toast.success('Login realizado com sucesso!')
       navigate('/')
     } catch (err: any) {
-      toast.error(err.message || 'Erro inesperado')
+      toast.error(err.response?.data?.message || 'Erro inesperado')
     } finally {
       setLoading(false)
     }

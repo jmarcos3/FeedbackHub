@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import FeedbackModal from '../components/FeedbackModal' // ajuste o caminho conforme sua estrutura
 
 interface Room {
   id: string
@@ -11,6 +13,8 @@ interface Room {
 export default function Home() {
   const [rooms, setRooms] = useState<Room[]>([])
   const [loading, setLoading] = useState(false)
+  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -25,20 +29,16 @@ export default function Home() {
       }
 
       try {
-        const res = await fetch('http://localhost:3000/rooms', {
+        const { data } = await axios.get('http://localhost:3000/rooms', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
-
-        if (!res.ok) {
-          throw new Error('Falha ao buscar salas')
-        }
-
-        const data = await res.json()
         setRooms(data)
       } catch (error: any) {
-        toast.error(error.message || 'Erro inesperado')
+        toast.error(
+          error?.response?.data?.message || 'Erro ao carregar as salas'
+        )
       } finally {
         setLoading(false)
       }
@@ -50,6 +50,16 @@ export default function Home() {
   const handleLogout = () => {
     localStorage.removeItem('token')
     navigate('/login')
+  }
+
+  const openFeedbackModal = (roomId: string) => {
+    setSelectedRoomId(roomId)
+    setIsFeedbackModalOpen(true)
+  }
+
+  const closeFeedbackModal = () => {
+    setIsFeedbackModalOpen(false)
+    setSelectedRoomId(null)
   }
 
   return (
@@ -76,12 +86,21 @@ export default function Home() {
           <li
             key={room.id}
             className="bg-indigo-800 bg-opacity-70 rounded-lg p-5 shadow-lg hover:shadow-xl transition cursor-pointer"
+            onClick={() => openFeedbackModal(room.id)}
           >
             <h2 className="text-2xl font-bold mb-2">{room.title}</h2>
             {room.description && <p className="text-indigo-300">{room.description}</p>}
           </li>
         ))}
       </ul>
+
+      {selectedRoomId && (
+        <FeedbackModal
+          roomId={selectedRoomId}
+          isOpen={isFeedbackModalOpen}
+          onClose={closeFeedbackModal}
+        />
+      )}
     </div>
   )
 }

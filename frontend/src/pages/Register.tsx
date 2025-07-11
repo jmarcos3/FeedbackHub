@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
+import axios from 'axios'
 import 'react-toastify/dist/ReactToastify.css'
 import TermsModal from '../components/TermsModal'
 
@@ -35,21 +36,16 @@ export default function Register() {
 
     setLoading(true)
     try {
-      const res = await fetch('http://localhost:3000/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
+      await axios.post('http://localhost:3000/users', {
+        username,
+        email,
+        password,
       })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.message || 'Erro ao registrar')
-      }
 
       toast.success('Registro realizado com sucesso! Redirecionando para login...')
       setTimeout(() => navigate('/login'), 2000)
     } catch (err: any) {
-      toast.error(err.message || 'Erro inesperado')
+      toast.error(err.response?.data?.message || 'Erro inesperado')
     } finally {
       setLoading(false)
     }
