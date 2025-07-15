@@ -3,28 +3,36 @@ import { useNavigate, Link } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import axios from 'axios'
 import 'react-toastify/dist/ReactToastify.css'
-import TermsModal from '../components/TermsModal'
+import { TermsModal } from '../components/modals/TermsModal'
+import { FeedbackHubLogo } from '../components/FeedbackHubLogo' // Componente do logo que criamos anteriormente
 
 export default function Register() {
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!username.trim()) {
+    if (!formData.username.trim()) {
       toast.error('O nome de usuário é obrigatório')
       return
     }
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       toast.error('As senhas não coincidem')
       return
     }
@@ -37,9 +45,9 @@ export default function Register() {
     setLoading(true)
     try {
       await axios.post('http://localhost:3000/users', {
-        username,
-        email,
-        password,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
       })
 
       toast.success('Registro realizado com sucesso! Redirecionando para login...')
@@ -51,105 +59,147 @@ export default function Register() {
     }
   }
 
+  const handleAcceptTerms = () => {
+    setAcceptedTerms(true)
+    setShowModal(false)
+    toast.success('Termos aceitos com sucesso!')
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-900 to-zinc-800 px-4">
-      <ToastContainer position="top-right" autoClose={3000} />
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl shadow-lg p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-center text-zinc-800 dark:text-white">Registrar</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-700 px-4">
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000}
+        toastClassName="!bg-zinc-800 !text-white"
+        progressClassName="!bg-blue-500"
+      />
+      
+      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-8 space-y-6 border border-zinc-200 dark:border-zinc-700">
+        {/* Logo FeedbackHub */}
+        <FeedbackHubLogo />
+
+        <h1 className="text-3xl font-bold text-center text-zinc-800 dark:text-white">
+          Criar sua conta
+        </h1>
+        
         <form onSubmit={handleRegister} className="space-y-4">
-          <div>
-            <label className="block mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-200">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Nome de usuário
             </label>
             <input
+              name="username"
               type="text"
               required
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-200">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-200">
-              Senha
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-200">
-              Confirmar Senha
-            </label>
-            <input
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="Seu nome de usuário"
             />
           </div>
 
-          <label className="flex items-center space-x-2 text-sm text-zinc-700 dark:text-zinc-200">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Email
+            </label>
+            <input
+              name="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="seu@email.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Senha
+            </label>
+            <input
+              name="password"
+              type="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Confirmar Senha
+            </label>
+            <input
+              name="confirmPassword"
+              type="password"
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div className="flex items-start space-x-3 pt-2">
             <input
               type="checkbox"
+              id="terms-checkbox"
               checked={acceptedTerms}
-              onChange={e => setAcceptedTerms(e.target.checked)}
-              className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 focus:ring-blue-500"
-              required
+              onChange={() => setAcceptedTerms(!acceptedTerms)}
+              className="mt-1 w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 focus:ring-blue-500 text-blue-600"
             />
-            <span>
-              Aceito os{' '}
+            <label htmlFor="terms-checkbox" className="text-sm text-zinc-700 dark:text-zinc-300">
+              Eu aceito os {' '}
               <button
                 type="button"
                 onClick={() => setShowModal(true)}
-                className="text-blue-600 hover:underline"
+                className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
               >
                 Termos de Serviço
               </button>
-            </span>
-          </label>
+            </label>
+          </div>
 
           <button
             type="submit"
             disabled={loading || !acceptedTerms}
-            className="w-full py-2 bg-green-600 hover:bg-green-700 transition-colors text-white font-semibold rounded-lg disabled:opacity-50"
+            className={`w-full py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 transition-all text-white font-semibold rounded-xl ${
+              !acceptedTerms ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            {loading ? 'Registrando...' : 'Registrar'}
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Criando conta...
+              </span>
+            ) : 'Registrar'}
           </button>
         </form>
 
-        <div className="text-center mt-4">
-          <p className="mb-2 text-gray-600 dark:text-gray-300">
-            Já possui conta?{' '}
+        <div className="text-center pt-4 border-t border-zinc-200 dark:border-zinc-800">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Já possui uma conta?{' '}
             <Link
               to="/login"
-              className="text-blue-600 hover:text-blue-700 font-semibold"
+              className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >
-              Faça login aqui
+              Faça login
             </Link>
           </p>
         </div>
       </div>
 
-      {/* Modal de termos */}
-      <TermsModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <TermsModal 
+        isOpen={showModal} 
+        onClose={() => setShowModal(false)}
+        onAccept={handleAcceptTerms} // Nova prop que precisamos adicionar ao TermsModal
+      />
     </div>
   )
 }

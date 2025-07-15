@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import FeedbackModal from '../components/FeedbackModal' // ajuste o caminho conforme sua estrutura
+import FeedbackModal from '../components/modals/FeedbackModal' // ajuste o caminho conforme sua estrutura
 
 interface Room {
   id: string
