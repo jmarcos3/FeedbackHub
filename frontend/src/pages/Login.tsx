@@ -97,7 +97,9 @@ export default function Login() {
               <button 
                 type="button"
                 onClick={() => setShowForgotPasswordModal(true)}
-                className="text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                className="text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors focus:outline-none"
+                tabIndex={-1}
+                aria-label="Recuperar senha" 
               >
                 Esqueceu a senha?
               </button>
@@ -109,6 +111,12 @@ export default function Login() {
               onChange={e => setPassword(e.target.value)}
               className="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="••••••••"
+              onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault() 
+                handleLogin(e)
+                }
+              }}
             />
           </div>
           

@@ -8,7 +8,7 @@ interface Feedback {
 }
 
 interface FeedbackModalProps {
-  roomId: string
+  roomId: string | null
   isOpen: boolean
   onClose: () => void
 }
