@@ -39,3 +39,12 @@
 .animate-slideUp {
   animation: slideUp 0.3s ease-out forwards;
 }
+
+@keyframes pulse-opacity {
+  0%, 100% { opacity: 0.7 }
+  50% { opacity: 1 }
+}
+
+.hover-pulse:hover {
+  animation: pulse-opacity 2s infinite;
+}

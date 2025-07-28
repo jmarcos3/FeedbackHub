@@ -15,6 +15,6 @@ export const roomsTable = mysqlTable(
     ownerFk: foreignKey({
       columns: [table.ownerId],
       foreignColumns: [usersTable.id],
-    }),
+    }).onDelete('cascade'),
   })
 );

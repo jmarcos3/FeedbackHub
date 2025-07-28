@@ -13,6 +13,6 @@ export const feedbacksTable = mysqlTable(
     roomFk: foreignKey({
       columns: [table.roomId],
       foreignColumns: [roomsTable.id],
-    }),
+    }).onDelete('cascade'),
   })
 );

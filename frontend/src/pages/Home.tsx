@@ -2,15 +2,14 @@ import { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import FeedbackModal from '../components/modals/FeedbackModal'
-import { FeedbackHubLogo } from '../components/FeedbackHubLogo' 
-
-interface Room {
-  id: string
-  title: string
-  description?: string
-  createdAt?: string 
-}
+import FeedbackModal from '@/components/modals/FeedbackModal'
+import { FeedbackHubLogo } from '../components/FeedbackHubLogo'
+import { RoomCard } from '../components/RoomCard'
+import { ArrowLeftOnRectangleIcon, PlusIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline'
+import type { Room } from '@/types'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
+import { EditRoomModal } from '@/components/modals/EditRoomModal'
+import { CreateRoomModal } from '@/components/modals/CreateRoomModal'
 
 export default function Home() {
   const [rooms, setRooms] = useState<Room[]>([])
@@ -18,6 +17,91 @@ export default function Home() {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
   const navigate = useNavigate()
+  const [roomToDelete, setRoomToDelete] = useState<string | null>(null)
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+  const [roomToEdit, setRoomToEdit] = useState<Room | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+
+const handleCreateRoom = async (data: { title: string; description: string }) => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.post(
+      'http://localhost:3000/rooms',
+      data,
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    
+    const newRoom = response.data.room
+    setRooms(prevRooms => [...prevRooms, newRoom])
+    toast.success(response.data.message || 'Sala criada com sucesso!')
+    return true
+  } catch (error) {
+    toast.error('Erro ao criar sala')
+    return false
+  }}
+      
+  const handleViewFeedback = (id: string) => {
+    setSelectedRoomId(id)
+    setIsFeedbackModalOpen(true)
+  }
+
+  const handleDeleteClick = (id: string) => {
+    setRoomToDelete(id)
+    setIsConfirmModalOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!roomToDelete) return
+    
+    try {
+      const token = localStorage.getItem('token')
+      await axios.delete(`http://localhost:3000/rooms/${roomToDelete}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      setRooms(rooms.filter(room => room.id !== roomToDelete))
+      toast.success('Sala excluída com sucesso')
+    } catch (error) {
+      toast.error('Erro ao excluir sala')
+    } finally {
+      setIsConfirmModalOpen(false)
+      setRoomToDelete(null)
+    }
+  }
+
+  const handleEditRoom = (id: string) => {
+    const room = rooms.find(r => r.id === id)
+    if (room) {
+      setRoomToEdit(room)
+      setIsEditModalOpen(true)
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    navigate('/login')
+    toast.info('Você saiu da sua conta')
+  }
+
+  const handleSaveRoom = async (data: { title: string; description: string }) => {
+    if (!roomToEdit) return
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.patch(
+        `http://localhost:3000/rooms/${roomToEdit.id}`,
+        data,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+
+      setRooms(rooms.map(room => 
+        room.id === roomToEdit.id ? { ...room, ...response.data } : room
+      ))
+      toast.success('Sala atualizada com sucesso!')
+    } catch (error) {
+      toast.error('Erro ao atualizar sala')
+    }
+  }
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -43,12 +127,6 @@ export default function Home() {
     fetchRooms()
   }, [navigate])
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    navigate('/login')
-    toast.info('Você saiu da sua conta')
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-700 p-6">
       <ToastContainer 
@@ -58,27 +136,25 @@ export default function Home() {
         progressClassName="!bg-blue-500"
       />
 
-    <header className="relative flex items-center mb-10 px-4">
-      <div className="absolute left-0">
-        <FeedbackHubLogo size="sm" showLine={false} />
-      </div>
+      <header className="relative flex items-center mb-10 px-4">
+        <div className="absolute left-0">
+          <FeedbackHubLogo size="sm" showLine={false} />
+        </div>
 
-      <h1 className="text-2xl font-bold text-white mx-auto">
-        Minhas Salas
-      </h1>
+        <h1 className="text-2xl font-bold text-white mx-auto">
+          Minhas Salas
+        </h1>
 
-      <div className="absolute right-0">
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors flex items-center space-x-2"
-        >
-          <span>Sair</span>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-        </button>
-      </div>
-    </header>
+        <div className="absolute right-0">
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors flex items-center space-x-2"
+          >
+            <span>Sair</span>
+            <ArrowLeftOnRectangleIcon className="h-5 w-5" />
+          </button>
+        </div>
+      </header>
 
       <main>
         {loading && (
@@ -92,14 +168,12 @@ export default function Home() {
         {!loading && rooms.length === 0 && (
           <div className="text-center py-20">
             <div className="mx-auto w-24 h-24 bg-zinc-800 rounded-full flex items-center justify-center mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+              <BuildingOfficeIcon className="h-12 w-12 text-zinc-500" />
             </div>
             <h3 className="text-xl font-medium text-white mb-2">Nenhuma sala encontrada</h3>
             <p className="text-zinc-400 mb-6">Crie sua primeira sala para começar</p>
             <button 
-              onClick={() => navigate('/create-room')} 
+              onClick={() => setIsCreateModalOpen(true)}
               className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
             >
               Criar Sala
@@ -110,44 +184,57 @@ export default function Home() {
         {!loading && rooms.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {rooms.map((room) => (
-              <div
+              <RoomCard
                 key={room.id}
-                onClick={() => {
-                  setSelectedRoomId(room.id)
-                  setIsFeedbackModalOpen(true)
-                }}
-                className="group bg-zinc-800 bg-opacity-80 hover:bg-opacity-100 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer border border-zinc-700 hover:border-blue-500"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <h2 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
-                    {room.title}
-                  </h2>
-                  <span className="text-xs text-zinc-500">
-                    {room.createdAt && new Date(room.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                
-                {room.description && (
-                  <p className="text-zinc-400 group-hover:text-zinc-300 line-clamp-3">
-                    {room.description}
-                  </p>
-                )}
-                
-                <div className="mt-4 pt-4 border-t border-zinc-700 flex justify-end">
-                  <span className="text-xs bg-blue-900 bg-opacity-50 text-blue-400 px-3 py-1 rounded-full">
-                    Ver feedbacks
-                  </span>
-                </div>
-              </div>
+                room={room}
+                onEdit={handleEditRoom}
+                onDelete={handleDeleteClick}
+                onViewFeedback={handleViewFeedback} 
+              />
             ))}
+            
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex flex-col items-center justify-center p-4 bg-zinc-800 bg-opacity-50 hover:bg-opacity-70 rounded-xl transition-colors border-2 border-dashed border-zinc-600 hover:border-blue-500 min-h-[180px]"
+            >
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mb-3 hover:bg-blue-700 transition-colors">
+                <PlusIcon className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-white font-medium">Nova Sala</span>
+            </button>
           </div>
         )}
       </main>
 
+      <CreateRoomModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={handleCreateRoom}
+      />
+
+      {roomToEdit && (
+        <EditRoomModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          room={roomToEdit}
+          onSave={handleSaveRoom}
+        />
+      )}
+
       <FeedbackModal
         roomId={selectedRoomId}
+        roomTitle={rooms.find(r => r.id === selectedRoomId)?.title}
         isOpen={isFeedbackModalOpen}
         onClose={() => setIsFeedbackModalOpen(false)}
+      />
+
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Excluir Sala"
+        description="Tem certeza que deseja excluir esta sala? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
       />
     </div>
   )
