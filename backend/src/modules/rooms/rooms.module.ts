@@ -7,6 +7,7 @@ import { RoomRepository } from './repositories/rooms.repository';
 import { ListRoomsUseCase } from './useCases/list-rooms.usecase';
 import { UpdateRoomUseCase } from './useCases/update-room.usecase';
 import { DeleteRoomUseCase } from './useCases/delete-room.usecase';
+import { GetRoomInfoUseCase } from './useCases/get-room-info.usercase';
 
 @Module({
   imports: [DatabaseModule, UsersModule],
@@ -15,6 +16,7 @@ import { DeleteRoomUseCase } from './useCases/delete-room.usecase';
     ListRoomsUseCase,
     UpdateRoomUseCase,
     DeleteRoomUseCase,
+    GetRoomInfoUseCase,
     RoomRepository
   ],
   exports: [RoomRepository],

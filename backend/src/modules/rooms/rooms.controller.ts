@@ -7,6 +7,7 @@ import { ListRoomsUseCase } from './useCases/list-rooms.usecase';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { UpdateRoomUseCase } from './useCases/update-room.usecase';
 import { DeleteRoomUseCase } from './useCases/delete-room.usecase';
+import { GetRoomInfoUseCase } from './useCases/get-room-info.usercase';
 
 @Controller('rooms')
 export class RoomsController {
@@ -14,7 +15,8 @@ export class RoomsController {
     private readonly createRoomUseCase: CreateRoomUseCase,
     private readonly listRoomsUseCase: ListRoomsUseCase,
     private readonly updateRoomUseCase: UpdateRoomUseCase,
-    private readonly deleteRoomUseCase: DeleteRoomUseCase,) {}
+    private readonly deleteRoomUseCase: DeleteRoomUseCase,
+    private readonly getRoomInfoUseCase: GetRoomInfoUseCase,) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
@@ -28,6 +30,11 @@ export class RoomsController {
   async list(@Req() req: any) {
     const ownerId = req.user.sub;
     return this.listRoomsUseCase.execute(ownerId);
+  }
+
+  @Get(':id')
+  async getRoomInfo(@Param('id') roomId: string){
+    return this.getRoomInfoUseCase.execute(roomId)
   }
 
   @Patch(':id')
