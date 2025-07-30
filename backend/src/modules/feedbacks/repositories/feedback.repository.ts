@@ -12,12 +12,13 @@ export class FeedbackRepository {
     return this.databaseService.getDb();
   }
 
-  async create(content: string, roomId: string) {
+  async create(content: string,rating: number, roomId: string) {
     const feedbackToCreate = {
       id: ulid(),
       roomId,
       content,
       createdAt: new Date(),
+      rating,
     };
 
     await this.db.insert(feedbacksTable).values(feedbackToCreate);

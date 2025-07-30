@@ -3,9 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { ArrowLeftIcon, PaperAirplaneIcon, StarIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
 import type { RoomInfo, RatingValue } from '@/types'
 import { ratingLabels } from '@/types'
+import { StarRating } from '@/components/StarRating'
 
 export default function PublicFeedback() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -19,7 +20,6 @@ export default function PublicFeedback() {
 
   const token = localStorage.getItem('token')
   const isLoggedIn = Boolean(token)
-
 
   useEffect(() => {
     const fetchRoomInfo = async () => {
@@ -101,31 +101,21 @@ export default function PublicFeedback() {
           <div className="flex flex-col items-center space-y-2">
             <p className="text-zinc-300 mb-1">Deixe sua avaliação sincera abaixo ☺️</p>
             
-            <div className="flex justify-center">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                className="p-1 focus:outline-none"
-                onClick={() => setRating(star as RatingValue)}
-                onMouseEnter={() => setHoverRating(star as RatingValue)}
-                onMouseLeave={() => setHoverRating(0)}
-              >
-                <StarIcon
-                  className={`h-8 w-8 ${
-                    (hoverRating || rating || 0) >= star 
-                      ? 'text-yellow-400 fill-yellow-400' 
-                      : 'text-zinc-500'
-                  } transition-colors`}
-                />
-              </button>
-              ))}
+            <div className="flex flex-col items-center">
+              <StarRating 
+                interactive={true}
+                rating={rating || 0}
+                hoverRating={hoverRating}
+                onRatingChange={setRating}
+                onHoverChange={setHoverRating}
+                size="lg"
+              />
+              
+              <p className="text-sm text-zinc-300 min-h-6 text-center mt-2">
+                {(hoverRating && !rating) ? ratingLabels[hoverRating] : 
+                 rating ? `Você avaliou: ${ratingLabels[rating]}` : 'Passe o mouse sobre as estrelas para ver as opções'}
+              </p>
             </div>
-            
-            <p className="text-sm text-zinc-300 min-h-6 text-center">
-              {(hoverRating && !rating) ? ratingLabels[hoverRating] : 
-               rating ? `Você avaliou: ${ratingLabels[rating]}` : 'Passe o mouse sobre as estrelas para ver as opções'}
-            </p>
           </div>
 
           <div className="relative">

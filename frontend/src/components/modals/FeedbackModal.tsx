@@ -1,26 +1,17 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
-
-interface Feedback {
-  id: string
-  content: string
-  createdAt: string
-}
-
-interface FeedbackModalProps {
-  roomId: string | null
-  roomTitle?: string
-  isOpen: boolean
-  onClose: () => void
-}
+import type { FeedbackModalProps, Feedback } from "@/types"
+import { StarRating } from "../StarRating"
 
 const FeedbackModal: React.FC<FeedbackModalProps> = ({ roomId, roomTitle, isOpen, onClose }) => {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
-  const feedbacksPerPage = 5 // Alterado para 5 feedbacks por página
+  const feedbacksPerPage = 5
+
+  const averageRating = feedbacks.reduce((acc, feedback) => acc + feedback.rating, 0) / feedbacks.length || 0
 
   useEffect(() => {
     if (!isOpen || !roomId) return
@@ -48,7 +39,6 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ roomId, roomTitle, isOpen
 
   if (!isOpen) return null
 
-  // Pagination logic
   const indexOfLastFeedback = currentPage * feedbacksPerPage
   const indexOfFirstFeedback = indexOfLastFeedback - feedbacksPerPage
   const currentFeedbacks = feedbacks.slice(indexOfFirstFeedback, indexOfLastFeedback)
@@ -69,9 +59,24 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ roomId, roomTitle, isOpen
                 {roomTitle}
               </h2>
             )}
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-              Feedbacks da sala
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                Feedbacks da sala
+              </p>
+              {feedbacks.length > 0 && (
+                <div className="flex items-center gap-1">
+                  <StarRating 
+                    rating={Math.round(averageRating)} 
+                    size="sm" 
+                    showNumber={false}
+                    interactive={false}
+                  />
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    ({averageRating.toFixed(1)}/5)
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -108,17 +113,25 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ roomId, roomTitle, isOpen
                     key={feedback.id} 
                     className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-700/50 border border-zinc-200 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition"
                   >
-                    <p className="text-zinc-800 dark:text-zinc-100 mb-2">
+                    <div className="flex justify-between items-start mb-2">
+                      <StarRating 
+                        rating={feedback.rating} 
+                        size="sm" 
+                        showNumber={true}
+                        interactive={false} 
+                      />
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {new Date(feedback.createdAt).toLocaleString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                    <p className="text-zinc-800 dark:text-zinc-100">
                       {feedback.content}
-                    </p>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {new Date(feedback.createdAt).toLocaleString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
                     </p>
                   </div>
                 ))}
@@ -127,7 +140,6 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ roomId, roomTitle, isOpen
           </div>
         )}
 
-        {/* Pagination Controls - Sempre visível quando há feedbacks */}
         {feedbacks.length > 0 && (
           <div className="mt-4 flex items-center justify-between border-t border-zinc-200 dark:border-zinc-700 pt-4">
             <button

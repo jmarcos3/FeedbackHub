@@ -24,7 +24,23 @@ export const ratingLabels: Record<RatingValue, string> = {
 export interface Feedback {
   id: string
   content: string
-  rating: RatingValue
+  rating: number 
   createdAt: string
-  userId?: string
+}
+
+export interface FeedbackModalProps {
+  roomId: string | null
+  roomTitle?: string
+  isOpen: boolean
+  onClose: () => void
+}
+export interface StarRatingProps {
+  rating: number;
+  hoverRating?: number;
+  onRatingChange?: (rating: RatingValue) => void;
+  onHoverChange?: (rating: RatingValue | 0) => void;
+  size?: 'sm' | 'md' | 'lg';
+  interactive?: boolean;
+  showNumber?: boolean;
+  className?: string;
 }
