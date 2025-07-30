@@ -3,10 +3,11 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { ArrowLeftIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
+import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
 import type { RoomInfo, RatingValue } from '@/types'
 import { ratingLabels } from '@/types'
 import { StarRating } from '@/components/StarRating'
+import { FeedbackHubLogo } from '@/components/FeedbackHubLogo'
 
 export default function PublicFeedback() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -74,18 +75,30 @@ export default function PublicFeedback() {
         progressClassName="!bg-blue-500"
       />
 
-      {isLoggedIn && (
-        <button
-          onClick={() => navigate('/')}
-          className="absolute top-6 left-6 flex items-center space-x-2 bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white px-4 py-2 rounded-lg font-medium transition-colors"
-        >
-          <ArrowLeftIcon className="h-5 w-5" />
-          <span>Voltar</span>
-        </button>
-      )}
-
       <div className="bg-zinc-800 rounded-xl shadow-2xl p-8 max-w-lg w-full text-white border border-zinc-700">
         <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            {isLoggedIn ? (
+              <button 
+                onClick={() => navigate('/')}
+                className="group focus:outline-none transition-transform hover:scale-105"
+                aria-label="Voltar para a página inicial"
+              >
+                <FeedbackHubLogo 
+                  size="md" 
+                  showLine={false} 
+                  className="opacity-90 group-hover:opacity-100 transition-opacity" 
+                />
+              </button>
+            ) : (
+              <FeedbackHubLogo 
+                size="md" 
+                showLine={false} 
+                className="opacity-90" 
+              />
+            )}
+          </div>
+          
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-4">
             {roomLoading ? 'Carregando...' : roomInfo?.title || 'Avalie esta Sala'}
           </h1>
@@ -99,7 +112,7 @@ export default function PublicFeedback() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex flex-col items-center space-y-2">
-            <p className="text-zinc-300 mb-1">Deixe sua avaliação sincera abaixo ☺️</p>
+            <p className="text-zinc-300 mb-1 text-sm">Deixe sua avaliação sincera abaixo ☺️</p>
             
             <div className="flex flex-col items-center">
               <StarRating 

@@ -136,26 +136,22 @@ const handleCreateRoom = async (data: { title: string; description: string }) =>
         progressClassName="!bg-blue-500"
       />
 
-      <header className="relative flex items-center mb-10 px-4">
-        <div className="absolute left-0">
-          <FeedbackHubLogo size="sm" showLine={false} />
-        </div>
 
-        <h1 className="text-2xl font-bold text-white mx-auto">
+      <header className="flex items-center justify-between mb-6 px-2 sm:px-4 lg:px-0">
+        <FeedbackHubLogo size="sm" showLine={false} />
+    
+        <h1 className="hidden sm:block text-xl sm:text-2xl font-bold text-white">
           Minhas Salas
         </h1>
 
-        <div className="absolute right-0">
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors flex items-center space-x-2"
-          >
-            <span>Sair</span>
-            <ArrowLeftOnRectangleIcon className="h-5 w-5" />
-          </button>
-        </div>
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-1 px-3 py-1 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors text-sm sm:text-base"
+        >
+          <span>Sair</span>
+          <ArrowLeftOnRectangleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+        </button>
       </header>
-
       <main>
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
