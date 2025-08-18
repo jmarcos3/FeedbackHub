@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
@@ -8,6 +7,7 @@ import type { RoomInfo, RatingValue } from '@/types'
 import { ratingLabels } from '@/types'
 import { StarRating } from '@/components/StarRating'
 import { FeedbackHubLogo } from '@/components/FeedbackHubLogo'
+import api from '@/services/api' 
 
 export default function PublicFeedback() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -25,7 +25,7 @@ export default function PublicFeedback() {
   useEffect(() => {
     const fetchRoomInfo = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:3000/rooms/${roomId}`)
+        const { data } = await api.get(`/rooms/${roomId}`) 
         setRoomInfo(data)
       } catch (error) {
         toast.error('Não foi possível carregar as informações da sala')
@@ -39,32 +39,37 @@ export default function PublicFeedback() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (rating === null || rating < 1 || rating > 5) {
       toast.error('Por favor, avalie com 1 a 5 estrelas')
       return
     }
 
-    if (content.length > 256) {
-      toast.error('O feedback deve ter no máximo 256 caracteres')
+    const lastFeedbackTime = Number(localStorage.getItem('lastFeedbackTime') || 0)
+    const now = Date.now()
+    if (now - lastFeedbackTime < 30 * 1000) { 
+      toast.error('Espere 30 segundos antes de enviar outro feedback')
       return
     }
 
     setLoading(true)
     try {
-      await axios.post(`http://localhost:3000/feedback/${roomId}`, { 
+      await api.post(`/feedback/${roomId}`, { 
         content: content.trim(), 
         rating 
       })
       toast.success('Avaliação enviada com sucesso!')
       setContent('')
       setRating(null)
+
+      localStorage.setItem('lastFeedbackTime', String(now))
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Erro ao enviar avaliação.')
     } finally {
       setLoading(false)
     }
   }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-700 flex flex-col items-center justify-center p-6">

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
-import axios from 'axios'
+import api from '@/services/api' 
 import 'react-toastify/dist/ReactToastify.css'
 import { ForgotPasswordModal } from '../components/modals/ForgotPasswordModal'
 import { FeedbackHubLogo } from '../components/FeedbackHubLogo'
@@ -18,10 +18,7 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const { data } = await axios.post('http://localhost:3000/auth/login', {
-        email,
-        password,
-      })
+      const { data } = await api.post('/auth/login', { email, password })
 
       localStorage.setItem('token', data.accessToken)
       toast.success('Login realizado com sucesso!')

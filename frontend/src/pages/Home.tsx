@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '@/services/api' // ✅ usar o axios centralizado
 import FeedbackModal from '@/components/modals/FeedbackModal'
 import { FeedbackHubLogo } from '../components/FeedbackHubLogo'
 import { RoomCard } from '../components/RoomCard'
@@ -23,23 +23,18 @@ export default function Home() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
-const handleCreateRoom = async (data: { title: string; description: string }) => {
-  try {
-    const token = localStorage.getItem('token')
-    const response = await axios.post(
-      'http://localhost:3000/rooms',
-      data,
-      { headers: { Authorization: `Bearer ${token}` } }
-    )
-    
-    const newRoom = response.data.room
-    setRooms(prevRooms => [...prevRooms, newRoom])
-    toast.success(response.data.message || 'Sala criada com sucesso!')
-    return true
-  } catch (error) {
-    toast.error('Erro ao criar sala')
-    return false
-  }}
+  const handleCreateRoom = async (data: { title: string; description: string }) => {
+    try {
+      const response = await api.post('/rooms', data)
+      const newRoom = response.data.room
+      setRooms(prev => [...prev, newRoom])
+      toast.success(response.data.message || 'Sala criada com sucesso!')
+      return true
+    } catch (error) {
+      toast.error('Erro ao criar sala')
+      return false
+    }
+  }
       
   const handleViewFeedback = (id: string) => {
     setSelectedRoomId(id)
@@ -53,12 +48,8 @@ const handleCreateRoom = async (data: { title: string; description: string }) =>
 
   const handleConfirmDelete = async () => {
     if (!roomToDelete) return
-    
     try {
-      const token = localStorage.getItem('token')
-      await axios.delete(`http://localhost:3000/rooms/${roomToDelete}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      await api.delete(`/rooms/${roomToDelete}`)
       setRooms(rooms.filter(room => room.id !== roomToDelete))
       toast.success('Sala excluída com sucesso')
     } catch (error) {
@@ -85,18 +76,9 @@ const handleCreateRoom = async (data: { title: string; description: string }) =>
 
   const handleSaveRoom = async (data: { title: string; description: string }) => {
     if (!roomToEdit) return
-
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.patch(
-        `http://localhost:3000/rooms/${roomToEdit.id}`,
-        data,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-
-      setRooms(rooms.map(room => 
-        room.id === roomToEdit.id ? { ...room, ...response.data } : room
-      ))
+      const response = await api.patch(`/rooms/${roomToEdit.id}`, data)
+      setRooms(rooms.map(r => r.id === roomToEdit.id ? { ...r, ...response.data } : r))
       toast.success('Sala atualizada com sucesso!')
     } catch (error) {
       toast.error('Erro ao atualizar sala')
@@ -105,17 +87,8 @@ const handleCreateRoom = async (data: { title: string; description: string }) =>
 
   useEffect(() => {
     const fetchRooms = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        toast.error('Sessão expirada, faça login novamente')
-        navigate('/login')
-        return
-      }
-
       try {
-        const { data } = await axios.get('http://localhost:3000/rooms', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        const { data } = await api.get('/rooms')
         setRooms(data)
       } catch (error: any) {
         toast.error(error?.response?.data?.message || 'Erro ao carregar salas')
@@ -125,7 +98,7 @@ const handleCreateRoom = async (data: { title: string; description: string }) =>
     }
 
     fetchRooms()
-  }, [navigate])
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-700 p-6">
@@ -136,14 +109,9 @@ const handleCreateRoom = async (data: { title: string; description: string }) =>
         progressClassName="!bg-blue-500"
       />
 
-
       <header className="flex items-center justify-between mb-6 px-2 sm:px-4 lg:px-0">
         <FeedbackHubLogo size="sm" showLine={false} />
-    
-        <h1 className="hidden sm:block text-xl sm:text-2xl font-bold text-white">
-          Minhas Salas
-        </h1>
-
+        <h1 className="hidden sm:block text-xl sm:text-2xl font-bold text-white">Minhas Salas</h1>
         <button
           onClick={handleLogout}
           className="flex items-center space-x-1 px-3 py-1 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors text-sm sm:text-base"
@@ -152,6 +120,7 @@ const handleCreateRoom = async (data: { title: string; description: string }) =>
           <ArrowLeftOnRectangleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
       </header>
+
       <main>
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

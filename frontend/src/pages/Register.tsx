@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
-import axios from 'axios'
+import api from '@/services/api'
 import 'react-toastify/dist/ReactToastify.css'
 import { TermsModal } from '../components/modals/TermsModal'
 import { FeedbackHubLogo } from '../components/FeedbackHubLogo' // Componente do logo que criamos anteriormente
@@ -44,7 +44,7 @@ export default function Register() {
 
     setLoading(true)
     try {
-      await axios.post('http://localhost:3000/users', {
+      await api.post('/users', { 
         username: formData.username,
         email: formData.email,
         password: formData.password,
@@ -75,7 +75,6 @@ export default function Register() {
       />
       
       <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-8 space-y-6 border border-zinc-200 dark:border-zinc-700">
-        {/* Logo FeedbackHub */}
         <FeedbackHubLogo />
 
         <h1 className="text-3xl font-bold text-center text-zinc-800 dark:text-white">
@@ -198,7 +197,7 @@ export default function Register() {
       <TermsModal 
         isOpen={showModal} 
         onClose={() => setShowModal(false)}
-        onAccept={handleAcceptTerms} // Nova prop que precisamos adicionar ao TermsModal
+        onAccept={handleAcceptTerms} 
       />
     </div>
   )
