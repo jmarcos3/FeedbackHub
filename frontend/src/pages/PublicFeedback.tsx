@@ -70,7 +70,6 @@ export default function PublicFeedback() {
     }
   }
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-700 flex flex-col items-center justify-center p-6">
       <ToastContainer 

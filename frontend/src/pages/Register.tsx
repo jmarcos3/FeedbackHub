@@ -4,7 +4,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import api from '@/services/api'
 import 'react-toastify/dist/ReactToastify.css'
 import { TermsModal } from '../components/modals/TermsModal'
-import { FeedbackHubLogo } from '../components/FeedbackHubLogo' // Componente do logo que criamos anteriormente
+import { FeedbackHubLogo } from '../components/FeedbackHubLogo' 
 
 export default function Register() {
   const [formData, setFormData] = useState({
