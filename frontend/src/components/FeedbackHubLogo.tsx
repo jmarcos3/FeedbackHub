@@ -1,5 +1,4 @@
 import { cn } from '../libs/utils' 
-
 interface FeedbackHubLogoProps {
   size?: 'sm' | 'md' | 'lg'
   className?: string

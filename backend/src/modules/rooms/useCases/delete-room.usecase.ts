@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { RoomRepository } from '../repositories/rooms.repository';
 import { ROOM_ERRORS } from 'src/shared/constants/helpers/roomErrors.helpers';
 import { ROOM_SUCESSFULL } from 'src/shared/constants/helpers/roomSucess.helpers';
-
 @Injectable()
 export class DeleteRoomUseCase {
   constructor(private readonly roomRepo: RoomRepository) {}

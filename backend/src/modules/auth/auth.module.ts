@@ -2,13 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-
 import { AuthController } from './auth.controller';
 import { LoginUseCase } from './useCases/login.usecase';
 import { JwtStrategy } from './strategies/jwt.strategy';
-
-import { UsersModule } from '../users/users.module'; // 👈 Está importando aqui?
-
+import { UsersModule } from '../users/users.module'; 
 @Module({
   imports: [
     ConfigModule, 

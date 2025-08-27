@@ -5,7 +5,6 @@ import App from './App.tsx'
 import 'react-toastify/dist/ReactToastify.css';
 import './assets/styles/animations.css';
 
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

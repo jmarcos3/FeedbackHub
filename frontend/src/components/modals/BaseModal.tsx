@@ -1,7 +1,6 @@
 // src/components/modals/BaseModal.tsx
 import type { ReactNode } from 'react'
 import { useEffect } from 'react'
-
 interface BaseModalProps {
   isOpen: boolean
   onClose: () => void
@@ -23,14 +22,12 @@ export function BaseModal({
   closeOnOverlayClick = true,
   size = 'md'
 }: BaseModalProps) {
-  // Tamanhos do modal
   const sizeClasses = {
     sm: 'max-w-sm',
     md: 'max-w-md',
     lg: 'max-w-lg'
   }
 
-  // Fechar modal ao pressionar Escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -38,12 +35,12 @@ export function BaseModal({
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden' // Bloqueia scroll da página
+      document.body.style.overflow = 'hidden' 
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'auto' // Restaura scroll da página
+      document.body.style.overflow = 'auto' 
     }
   }, [isOpen, onClose])
 
@@ -56,9 +53,8 @@ export function BaseModal({
     >
       <div 
         className={`bg-white dark:bg-zinc-800 rounded-2xl p-6 w-full shadow-2xl border border-zinc-200 dark:border-zinc-700 animate-slideUp ${sizeClasses[size]}`}
-        onClick={(e) => e.stopPropagation()} // Impede que clicks dentro do modal fechem
+        onClick={(e) => e.stopPropagation()} 
       >
-        {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold text-zinc-800 dark:text-white">
             {title}
@@ -85,12 +81,10 @@ export function BaseModal({
           </button>
         </div>
         
-        {/* Content */}
         <div className="text-zinc-600 dark:text-zinc-300 mb-6">
           {children}
         </div>
         
-        {/* Footer (condicional) */}
         {!hideActionButtons && (
           <div className="flex justify-end gap-2">
             <button

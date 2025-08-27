@@ -3,7 +3,6 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { LoginUseCase } from './useCases/login.usecase';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {

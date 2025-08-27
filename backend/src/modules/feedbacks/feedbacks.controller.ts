@@ -4,7 +4,6 @@ import { CreateFeedbackUseCase } from './useCases/create-feedback.usecase';
 import { AuthGuard } from '@nestjs/passport';
 import { ListFeedbacksUseCase } from './useCases/list-feedbacks.usecase';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
 @ApiTags('Feedback')
 @Controller('feedback')
 export class FeedbackController {

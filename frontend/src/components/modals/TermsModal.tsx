@@ -1,10 +1,9 @@
 // src/components/modals/TermsModal.tsx
 import { BaseModal } from './BaseModal'
-
 interface TermsModalProps {
   isOpen: boolean
   onClose: () => void
-  onAccept?: () => void // Nova prop
+  onAccept?: () => void 
 }
 
 export function TermsModal({ isOpen, onClose, onAccept }: TermsModalProps) {

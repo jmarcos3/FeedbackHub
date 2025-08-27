@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { RoomRepository } from "../repositories/rooms.repository";
 import { ROOM_ERRORS } from "src/shared/constants/helpers/roomErrors.helpers";
-
 @Injectable()
 export class GetRoomInfoUseCase {
   constructor(private readonly roomRepo: RoomRepository){}

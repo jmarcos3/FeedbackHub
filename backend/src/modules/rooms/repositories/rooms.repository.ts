@@ -5,7 +5,6 @@ import { DatabaseService } from 'src/shared/database/database.service';
 import { roomsTable } from 'src/shared/database/tables';
 import { ulid } from 'ulid';
 import { UpdateRoomDto } from '../dto/update-room.dto';
-
 @Injectable()
 export class RoomRepository {
   constructor(

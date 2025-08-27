@@ -3,7 +3,6 @@ import { desc, eq } from 'drizzle-orm';
 import { DatabaseService } from 'src/shared/database/database.service';
 import { feedbacksTable } from 'src/shared/database/tables/feedback.table';
 import { ulid } from 'ulid';
-
 @Injectable()
 export class FeedbackRepository {
   constructor(private readonly databaseService: DatabaseService) {}

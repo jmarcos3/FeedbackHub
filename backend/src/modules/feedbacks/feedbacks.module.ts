@@ -5,7 +5,6 @@ import { RoomsModule } from '../rooms/rooms.module';
 import { FeedbackController } from './feedbacks.controller';
 import { FeedbackRepository } from './repositories/feedback.repository';
 import { ListFeedbacksUseCase } from './useCases/list-feedbacks.usecase';
-
 @Module({
   imports: [
     DatabaseModule,

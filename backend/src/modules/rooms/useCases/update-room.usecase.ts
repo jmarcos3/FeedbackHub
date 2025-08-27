@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { RoomRepository } from '../repositories/rooms.repository';
 import { UpdateRoomDto } from '../dto/update-room.dto';
 import { ROOM_ERRORS } from 'src/shared/constants/helpers/roomErrors.helpers';
-
 @Injectable()
 export class UpdateRoomUseCase {
   constructor(private readonly roomRepo: RoomRepository) {}

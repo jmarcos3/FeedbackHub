@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import api from '@/services/api' // ✅ usar o axios centralizado
+import api from '@/services/api' 
 import FeedbackModal from '@/components/modals/FeedbackModal'
 import { FeedbackHubLogo } from '../components/FeedbackHubLogo'
 import { RoomCard } from '../components/RoomCard'

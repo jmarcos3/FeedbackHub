@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsString, Length, Min, Max } from 'class-validator';
-
 export class CreateFeedbackDto {
   @ApiProperty({
     example: 'Descrição criada para teste via swagger',
